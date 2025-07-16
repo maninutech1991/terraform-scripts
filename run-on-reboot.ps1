@@ -217,7 +217,7 @@ function New-FinanceUserAndMoveComputer {
         [string]$ComputerName,
 
         [string]$OUName = "Finance",
-        [string]$DomainDN = "DC=uptin,DC=local"
+        [string]$DomainDN = "DC=corp,DC=contoso,Dc=com"
     )
 
     # Import AD module if needed
