@@ -12,16 +12,17 @@ if (-not (Test-Path "C:\Scripts")) {
 # Download the run-on-reboot script from GitHub
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/maninutech1991/terraform-scripts/main/run-on-reboot.ps1" -OutFile $ScriptPath
 
-# Create scheduled task action and trigger
+$ScriptPath = "C:\Scripts\run-on-reboot.ps1"
 $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File `"$ScriptPath`""
 $Trigger = New-ScheduledTaskTrigger -AtStartup
-$Principal = New-ScheduledTaskPrincipal -UserId "azureadmin" -LogonType Password -RunLevel Highest
+$Principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
 
-# Create secure password
-$Password = ConvertTo-SecureString "P@ssword1234!" -AsPlainText -Force
+Register-ScheduledTask -TaskName "RunAsSystemOnBoot" `
+                       -Action $Action `
+                       -Trigger $Trigger `
+                       -Principal $Principal `
+                       -Force
 
-# Register the scheduled task
-Register-ScheduledTask -Action $Action -Trigger $Trigger -Principal $Principal -TaskName $TaskName -Description "Run run-on-reboot.ps1 after reboot" -User "azureadmin" -Password $Password -Force
 
 Write-Output "Scheduled task created successfully."
 # Install the AD Domain Services role
